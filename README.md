@@ -1,1 +1,3 @@
-# Complex_NER_SemEval
+# Semeval Multi NER
+
+تشخیص موجودیت‌های نامدار انگلیسی 
