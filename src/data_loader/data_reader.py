@@ -11,12 +11,6 @@
 import json5
 import pandas as pd
 
-__author__ = "Ehsan Tavan", "Ali Rahmati", "Maryam Najafi"
-__project__ = "signal entity detection"
-__version__ = "1.0.0"
-__date__ = "2021/09/27"
-__email__ = "tavan.ehsan@gmail.com"
-
 
 def read_csv(path: str, columns: list = None, names: list = None) -> pd.DataFrame:
     """

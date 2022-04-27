@@ -10,12 +10,6 @@
 
 import json
 
-__author__ = "Ehsan Tavan", "Ali Rahmati", "Maryam Najafi"
-__project__ = "signal entity detection"
-__version__ = "1.0.0"
-__date__ = "2021/09/27"
-__email__ = "tavan.ehsan@gmail.com"
-
 
 def write_json(path: str, data: dict) -> None:
     """
