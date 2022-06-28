@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+    Complex NER Project:
+"""
+
+# ============================ Third Party libs ============================
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 

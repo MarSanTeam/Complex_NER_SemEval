@@ -1,23 +1,17 @@
 # -*- coding: utf-8 -*-
-# ========================================================
-"""This module is written for write MT5 classifier."""
-# ========================================================
+"""
+    Complex NER Project:
+"""
 
-
-# ========================================================
-# Imports
-# ========================================================
-
+# ============================ Third Party libs ============================
 import torch
 import pytorch_lightning as pl
 import transformers
 import numpy as np
 from typing import List
 from seqeval.metrics import f1_score, accuracy_score, classification_report
-from flair.embeddings import TransformerWordEmbeddings, FlairEmbeddings, StackedEmbeddings
 
-from flair.data import Sentence
-
+# ============================ My packages ============================
 from utils import ignore_pad_index, convert_index_to_tag
 from evaluation import Evaluator
 from .helper import add_metric_to_log_dic
