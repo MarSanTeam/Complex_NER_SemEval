@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+    Complex NER Project:
+"""
+
+# ============================ Third Party libs ============================
 import os
 import copy
 import pickle as pkl
@@ -5,6 +11,7 @@ from torch.utils.data import DataLoader
 import transformers
 import logging
 
+# ============================ My packages ============================
 from configuration import BaseConfig
 from data_loader import read_text
 from models.mt5_transformer import Classifier

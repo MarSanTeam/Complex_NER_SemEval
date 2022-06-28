@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-# ========================================================
-"""trainer module is written for train model"""
-# ========================================================
+"""
+    Complex NER Project:
+"""
 
-
-# ========================================================
-# Imports
-# ========================================================
+# ============================ Third Party libs ============================
 
 import os
 import copy
@@ -17,6 +14,7 @@ from pytorch_lightning.callbacks import EarlyStopping
 from transformers import T5Tokenizer, MT5Tokenizer
 import itertools
 
+# ============================ My packages ============================
 from configuration import BaseConfig
 from data_loader import read_text, write_json
 from data_preparation import prepare_conll_data, tokenize_and_keep_labels,\
