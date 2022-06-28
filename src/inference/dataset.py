@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+    Complex NER Project:
+"""
+
+# ============================ Third Party libs ============================
+
 from torch.utils.data import Dataset
 from typing import List
-import torch
-from data_preparation import pad_sequence_2, pad_sequence
 
 
 class InferenceDataset(Dataset):

@@ -1,6 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+    Complex NER Project:
+"""
+
+# ============================ Third Party libs ============================
 from typing import List
 import numpy
 
+# ============================ My packages ============================
 from configuration import BaseConfig
 
 CONFIG_CLASS = BaseConfig()
