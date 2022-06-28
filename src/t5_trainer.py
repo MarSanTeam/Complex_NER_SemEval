@@ -23,7 +23,8 @@ from data_preparation import prepare_conll_data, tokenize_and_keep_labels,\
     pad_sequence, truncate_sequence
 from indexer import Indexer
 from utils import find_max_length_in_list
-from models import DataModule, build_checkpoint_callback
+from models import build_checkpoint_callback
+from dataset import DataModule
 from models.mt5_transformer import Classifier
 
 logging.basicConfig(level=logging.DEBUG)
