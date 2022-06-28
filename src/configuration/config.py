@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 # ========================================================
-"""config module is written for write parameters."""
-# ========================================================
 
+"""
+    Complex NER Project:
+        configuration:
+                Get data and parameter from the user
+"""
 
-# ========================================================
-# Imports
-# ========================================================
-
+# ============================ Third Party libs ============================
 import argparse
 from pathlib import Path
+
+
+# ========================================================
 
 
 class BaseConfig:
@@ -45,9 +48,6 @@ class BaseConfig:
         self.parser.add_argument("--test_data", type=str, default="test_data.csv")
         self.parser.add_argument("--dev_data", type=str, default="EN-English/en_dev.conll")
 
-        self.parser.add_argument("--data_headers", type=list, default=["text", "label"])
-        self.parser.add_argument("--customized_headers", type=list, default=["text", "label"])
-
         self.parser.add_argument("--save_top_k", type=int, default=1, help="...")
 
         self.parser.add_argument("--num_workers", type=int,
@@ -62,29 +62,11 @@ class BaseConfig:
                                  default=32,
                                  help="...")
 
-        self.parser.add_argument("--lr", default=2e-5,
-                                 help="...")
-
-        self.parser.add_argument("--lstm_units", type=int,
-                                 default=128,
-                                 help="...")
-        self.parser.add_argument("--lstm_layers", type=int,
-                                 default=2,
-                                 help="...")
-        self.parser.add_argument("--bidirectional", type=bool,
-                                 default=True,
-                                 help="...")
         self.parser.add_argument("--dropout", type=float,
                                  default=0.15,
                                  help="...")
-        self.parser.add_argument("--embedding_dim", type=int,
-                                 default=256,
-                                 help="...")
-        self.parser.add_argument("--alpha", type=float,
-                                 default=50.0,
-                                 help="...")
-        self.parser.add_argument("--alpha_warmup_ratio", type=float,
-                                 default=0.1,
+
+        self.parser.add_argument("--lr", default=2e-5,
                                  help="...")
 
     def get_config(self):

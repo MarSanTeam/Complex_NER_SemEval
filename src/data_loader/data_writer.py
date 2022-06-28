@@ -1,22 +1,39 @@
 # -*- coding: utf-8 -*-
-# ========================================================
-"""data_writer module is written for write data in files"""
-# ========================================================
+# ==========================================================================
 
+"""
+    Complex NER Project:
+        data loader:
+            writing data
+"""
 
-# ========================================================
-# Imports
-# ========================================================
-
+# ============================ Third Party libs ============================
 import json
+import pickle
+
+import pandas as pd
 
 
-def write_json(path: str, data: dict) -> None:
+# ==========================================================================
+
+
+def write_json(data: dict, path: str) -> None:
     """
     write_json function is written for write in json files
     :param path:
     :param data:
     :return:
     """
-    with open(path, "w", encoding="utf-8") as outfile:
+    with open(path, "w", encoding="utf8") as outfile:
         json.dump(data, outfile, separators=(",", ":"), indent=4)
+
+
+def write_pickle(path: str, data: list) -> None:
+    """
+    write_pickle function is written for write data in pickle file
+    :param path:
+    :param data:
+    :return:
+    """
+    with open(path, "wb") as outfile:
+        pickle.dump(data, outfile)
