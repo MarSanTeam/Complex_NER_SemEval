@@ -11,19 +11,17 @@
 import os
 import copy
 import logging
-from bpemb import BPEmb
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import CSVLogger
 from pytorch_lightning.callbacks import EarlyStopping
-from pytorch_lightning.tuner.tuning import Tuner
-from transformers import BertTokenizer, T5Tokenizer, MT5Tokenizer
+from transformers import T5Tokenizer, MT5Tokenizer
 import itertools
 
 from configuration import BaseConfig
 from data_loader import read_text, write_json
-from data_preparation import prepare_conll_data, \
-    add_special_tokens, tokenize_and_keep_labels, pad_sequence, truncate_sequence
-from indexer import Indexer, TokenIndexer
+from data_preparation import prepare_conll_data, tokenize_and_keep_labels,\
+    pad_sequence, truncate_sequence
+from indexer import Indexer
 from utils import find_max_length_in_list
 from models import DataModule, build_checkpoint_callback
 from models.mt5_transformer import Classifier

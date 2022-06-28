@@ -3,17 +3,15 @@ import copy
 import pickle as pkl
 from torch.utils.data import DataLoader
 import transformers
-from bpemb import BPEmb
 import logging
 
 from configuration import BaseConfig
-from data_loader import read_json5, read_text
+from data_loader import read_text
 from models.mt5_transformer import Classifier
-from evaluation import evaluate_with_seqeval
 
-from data_preparation import prepare_conll_data, create_test_samples, pad_sequence_2
+from data_preparation import prepare_conll_data, create_test_samples
 from utils import find_max_length_in_list, handle_subtoken_labels, convert_x_label_to_true_label, \
-    progress_bar, label_correction
+    progress_bar
 from inference import Inference, InferenceDataset
 
 logging.basicConfig(level=logging.DEBUG)
