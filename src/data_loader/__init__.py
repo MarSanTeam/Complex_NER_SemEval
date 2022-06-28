@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# pylint: disable-msg=import-error
 # ========================================================
 """data_loader package is written for write and read files"""
 # ========================================================

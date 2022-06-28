@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# pylint: disable-msg=too-few-public-methods
 # ========================================================
 """config module is written for write parameters."""
 # ========================================================
@@ -33,11 +32,11 @@ class BaseConfig:
                                  default=Path(__file__).parents[2].__str__() + "/assets/saved_models/")
 
         self.parser.add_argument("--language_model_path", type=str,
-                                 default=Path(__file__).parents[2].__str__()
-                                         + "/assets/pretrained_models/t5_en_large")
+                                 default=Path(__file__).parents[3].__str__()
+                                         + "/LanguageModels/t5_en_large")
         self.parser.add_argument("--language_model_tokenizer_path", type=str,
-                                 default=Path(__file__).parents[2].__str__()
-                                         + "/assets/pretrained_models/t5_en_large")
+                                 default=Path(__file__).parents[3].__str__()
+                                         + "/LanguageModels/t5_en_large")
 
         self.parser.add_argument("--csv_logger_path", type=str,
                                  default=Path(__file__).parents[2].__str__() + "/assets")
@@ -56,7 +55,7 @@ class BaseConfig:
                                  help="...")
 
         self.parser.add_argument("--n_epochs", type=int,
-                                 default=100,
+                                 default=1,
                                  help="...")
 
         self.parser.add_argument("--batch_size", type=int,
@@ -66,8 +65,26 @@ class BaseConfig:
         self.parser.add_argument("--lr", default=2e-5,
                                  help="...")
 
+        self.parser.add_argument("--lstm_units", type=int,
+                                 default=128,
+                                 help="...")
+        self.parser.add_argument("--lstm_layers", type=int,
+                                 default=2,
+                                 help="...")
+        self.parser.add_argument("--bidirectional", type=bool,
+                                 default=True,
+                                 help="...")
         self.parser.add_argument("--dropout", type=float,
                                  default=0.15,
+                                 help="...")
+        self.parser.add_argument("--embedding_dim", type=int,
+                                 default=256,
+                                 help="...")
+        self.parser.add_argument("--alpha", type=float,
+                                 default=50.0,
+                                 help="...")
+        self.parser.add_argument("--alpha_warmup_ratio", type=float,
+                                 default=0.1,
                                  help="...")
 
     def get_config(self):

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# pylint: disable-msg=import-error
 # ========================================================
 """data_preparation package is written for preparing data"""
 # ========================================================

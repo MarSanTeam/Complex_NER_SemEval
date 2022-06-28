@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-# pylint: disable-msg=import-error
-# pylint: disable-msg=too-many-ancestors
-# pylint: disable-msg=arguments-differ
 # ========================================================
 """This module is written for write attentions classes."""
 # ========================================================
@@ -14,12 +11,6 @@
 import numpy as np
 import torch
 from typing import Optional, Tuple
-
-__author__ = "Ehsan Tavan"
-__project__ = "NER_SemEval"
-__version__ = "1.0.0"
-__date__ = "2021/11/21"
-__email__ = "tavan.ehsan@gmail.com"
 
 
 class ScaledDotProductAttention(torch.nn.Module):

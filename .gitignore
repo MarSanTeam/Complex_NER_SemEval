@@ -128,11 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#####
-# Pycharm
+data
 .idea
-
-##### folder name
-
-summary
-assets

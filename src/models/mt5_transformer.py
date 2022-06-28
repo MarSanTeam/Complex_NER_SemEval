@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-# pylint: disable-msg=import-error
-# pylint: disable-msg=too-many-ancestors
-# pylint: disable-msg=arguments-differ
 # ========================================================
 """This module is written for write MT5 classifier."""
 # ========================================================
@@ -28,12 +25,11 @@ from models.transformers import EncoderLayer
 
 
 class Classifier(pl.LightningModule):
-    def __init__(self, idx2tag: dict, tag2idx: dict, token2idx: dict, pad_token: str, config):
+    def __init__(self, idx2tag: dict, tag2idx: dict, pad_token: str, config):
         super().__init__()
         self.config = config
         self.idx2tag = idx2tag
         self.tag2idx = tag2idx
-        self.token2idx = token2idx
         self.pad_token = pad_token
 
         self.tags = self.extract_tags()
@@ -41,45 +37,12 @@ class Classifier(pl.LightningModule):
         self.mt5_model = transformers.T5EncoderModel.from_pretrained(
             config.language_model_path)
 
-        # self.embedding = torch.nn.Embedding(num_embeddings=len(self.token2idx),
-        #                                     embedding_dim=self.config.embedding_dim,
-        #                                     padding_idx=self.token2idx["<PAD>"])
+        transformer_input_dim = self.mt5_model.config.hidden_size
+        self.enc_layer = EncoderLayer(hid_dim=transformer_input_dim,
+                                      n_heads=8, pf_dim=transformer_input_dim * 2,
+                                      dropout=config.dropout)
 
-        # self.flair_embeddings = TransformerWordEmbeddings(model=self.config.roberta_model_path,
-        #                                                   layers="-1",
-        #                                                   subtoken_pooling="mean",
-        #                                                   fine_tune=True,
-        #                                                   use_context=True,
-        #                                                   ).to("cuda:0")
-
-        # flair_forward_embedding = FlairEmbeddings("fa-forward")#, fine_tune=True)
-        # flair_backward_embedding = FlairEmbeddings("fa-backward")#, fine_tune=True)
-        # self.flair_embeddings = StackedEmbeddings(
-        #     embeddings=[flair_forward_embedding, flair_backward_embedding])
-
-        transformer_input_dim = self.mt5_model.config.hidden_size # + self.config.embedding_dim
-        # self.enc_layer = EncoderLayer(hid_dim=transformer_input_dim,
-        #                               n_heads=8, pf_dim=transformer_input_dim * 2,
-        #                               dropout=config.dropout)
-
-        # self.position_embedding = torch.nn.Embedding(self.config.SENTENCE_MAX_LENGTH, 2048)
-
-        self.lstm_layers = torch.nn.LSTM(input_size=transformer_input_dim,
-                                         hidden_size=self.config.lstm_units,
-                                         num_layers=self.config.lstm_layers,
-                                         bidirectional=self.config.bidirectional,
-                                         batch_first=True)
-
-        # self.fc_layer = torch.nn.Linear(in_features=300,
-        #                                 out_features=256)
-
-        # self.lstm_layer = torch.nn.LSTM(input_size=300,
-        #                                 hidden_size=128,
-        #                                 num_layers=1,
-        #                                 bidirectional=True,
-        #                                 batch_first=True)
-
-        self.output_layer = torch.nn.Linear(in_features=256,#transformer_input_dim,
+        self.output_layer = torch.nn.Linear(in_features=transformer_input_dim,
                                             out_features=len(self.idx2tag))
 
         self.dropout = torch.nn.Dropout(config.dropout)
@@ -95,47 +58,9 @@ class Classifier(pl.LightningModule):
         :return:
         """
         attn_masks = batch["attention_mask"].type(torch.uint8)
-        # N, seq_length = batch["input_ids"].shape
-
-        # positions = torch.arange(0, seq_length).expand(N, seq_length).to("cuda:1")
-        # positions_embedding = self.position_embedding(positions)
-
         mt5_tokens = self.mt5_model(input_ids=batch["input_ids"]).last_hidden_state
-        output, (hidden, state) = self.lstm_layers(mt5_tokens)
-        # output.size() = [batch_size, sen_len, lstm_units *2]
-
-
-        # mt5_subtoken_check = self.mt5_model(input_ids=batch["subtoken_check"]).last_hidden_state
-        # flair_emb = []
-        # for sen in batch["tokens"]:
-        #     flair_emb_tmp = []
-        #     sentence = Sentence(sen)
-        #     self.flair_embeddings.embed(sentence)
-        #     for token in sentence:
-        #         flair_emb_tmp.append(token.embedding.tolist())
-        #     flair_emb.append(flair_emb_tmp)
-        #
-        # flair_emb = torch.tensor(flair_emb).to("cuda:0")
-        # flair_emb = flair_emb.permute(1, 0, 2)
-
-        # bpemb_ids, (hidden, _) = self.lstm_layer(batch["bpemb_ids"])
-
-        # embedding = self.embedding(batch["indexed_sentences"])
-        # # embedding.size() = [batch_size, sen_len, embedding_dim]
-
-        # token_features = torch.cat((mt5_tokens, mt5_subtoken_check), dim=2)
-
-        # token_features = self.dropout(mt5_tokens)
-
-        # token_features = token_features + positions_embedding
-        # token_features.size() = [batch_size, sen_len, embedding_dim+mt5_model.config.hidden_size]
-
-        # enc_out = self.enc_layer(mt5_tokens, src_mask=attn_masks)
-        # token_features = torch.cat((enc_out, batch["bpemb_ids"]), dim=2)
-
-        # token_features = torch.cat((enc_out, batch["bpemb_ids"]), dim=2)
-
-        return self.output_layer(output)
+        enc_out = self.enc_layer(mt5_tokens, src_mask=attn_masks)
+        return self.output_layer(enc_out)
 
     def extract_tags(self):
         """

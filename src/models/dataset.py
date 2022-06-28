@@ -7,15 +7,11 @@ from utils import find_max_length_in_list
 
 
 class CustomDataset(Dataset):
-    def __init__(self, texts: List[list], targets: List[list], indexed_sentences: List[list],
-                 subtoken_checks: List[list], bpemb_ids: List[list], tokens: List[list],
-                 max_length: int, tokenizer, target_indexer):
+    def __init__(self, texts: List[list], targets: List[list],
+                 subtoken_checks: List[list], max_length: int, tokenizer, target_indexer):
         self.texts = texts
         self.targets = targets
-        self.indexed_sentences = indexed_sentences
         self.subtoken_checks = subtoken_checks
-        self.bpemb_ids = bpemb_ids
-        self.tokens = tokens
         self.max_length = max_length
         self.tokenizer = tokenizer
         self.target_indexer = target_indexer
@@ -38,39 +34,12 @@ class CustomDataset(Dataset):
                                                     padding="max_length",
                                                     truncation=True).input_ids
 
-        # position = self.tokenizer.encode_plus(text=self.position,
-        #                                       add_special_tokens=True,
-        #                                       max_length=self.max_length,
-        #                                       return_tensors="pt",
-        #                                       padding="max_length",
-        #                                       truncation=True).input_ids
-
         target = self.target_indexer.convert_samples_to_indexes([self.targets[item_index]])[0]
 
-        # indexed_sentences = self.indexed_sentences[item_index]
-        bpemb_ids = self.bpemb_ids[item_index]
-        # tokens = self.tokens[item_index]
-
-        # indexed_sentences = pad_sequence([indexed_sentences], max_length=self.max_length, pad_item=0)[0]
-        # tokens = pad_sequence([tokens], max_length=self.max_length, pad_item="<PAD>")[0]
-
-        bpemb_ids = pad_sequence_2([bpemb_ids], max_length=self.max_length, pad_item=0)[0]
-
-        # print(type(bpemb_ids))
-
-        # indexed_sentences = truncate_sequence(indexed_sentences, self.max_length)[0]
-
-        # assert len(indexed_sentences) == len(subtoken_check.flatten())
-
-        return {"input_ids": data["input_ids"].flatten(), "target": torch.LongTensor(target),
+        return {"input_ids": data["input_ids"].flatten(),
+                "target": torch.LongTensor(target),
                 "attention_mask": data["attention_mask"].flatten(),
-                "subtoken_check": subtoken_check.flatten(),
-                "bpemb_ids": torch.tensor(bpemb_ids)}
-                #"position": position}  # ,
-        # "tokens": tokens}#,
-        # "indexed_sentences": torch.LongTensor(indexed_sentences)}  # ,
-        # "bpemb_ids": torch.tensor(bpemb_ids),
-        # "tokens": tokens}
+                "subtoken_check": subtoken_check.flatten()}
 
 
 class LstmDataset(Dataset):
@@ -111,30 +80,21 @@ class DataModule(pl.LightningDataModule):
     def setup(self):
         self.train_dataset = CustomDataset(texts=self.data["train_data"][0],
                                            targets=self.data["train_data"][1],
-                                           indexed_sentences=self.data["train_data"][2],
-                                           subtoken_checks=self.data["train_data"][3],
-                                           bpemb_ids=self.data["train_data"][4],
-                                           tokens=self.data["train_data"][5],
+                                           subtoken_checks=self.data["train_data"][2],
                                            max_length=self.max_length,
                                            tokenizer=self.tokenizer,
                                            target_indexer=self.target_indexer)
 
         self.val_dataset = CustomDataset(texts=self.data["val_data"][0],
                                          targets=self.data["val_data"][1],
-                                         indexed_sentences=self.data["val_data"][2],
-                                         subtoken_checks=self.data["val_data"][3],
-                                         bpemb_ids=self.data["val_data"][4],
-                                         tokens=self.data["val_data"][5],
+                                         subtoken_checks=self.data["val_data"][2],
                                          max_length=self.max_length,
                                          tokenizer=self.tokenizer,
                                          target_indexer=self.target_indexer)
 
         self.test_dataset = CustomDataset(texts=self.data["val_data"][0],
                                           targets=self.data["val_data"][1],
-                                          indexed_sentences=self.data["val_data"][2],
-                                          subtoken_checks=self.data["val_data"][3],
-                                          bpemb_ids=self.data["val_data"][4],
-                                          tokens=self.data["val_data"][5],
+                                          subtoken_checks=self.data["val_data"][2],
                                           max_length=self.max_length,
                                           tokenizer=self.tokenizer,
                                           target_indexer=self.target_indexer)
