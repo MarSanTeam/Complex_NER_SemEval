@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
-# ========================================================
-"""data_preparation module is written for tokenizing texts"""
-# ========================================================
+"""
+    Complex NER Project:
+        data preparation:
+            data_prepration.py
 
+"""
 
-# ========================================================
-# Imports
-# ========================================================
-
-import torch
-import numpy as np
+# ============================ Third Party libs ============================
 from typing import List
-import torch
 
 
 def prepare_conll_data(data: list) -> [List[list], List[list]]:
@@ -112,21 +108,6 @@ def pad_sequence(texts: List[list], max_length: int, pad_item: str = "[PAD]") ->
     return texts
 
 
-def pad_sequence_2(texts: List[list], max_length: int, pad_item: str = "[PAD]") -> List[list]:
-    """
-    pad_sequence function is written for pad list of samples
-    :param texts: [["item_1", "item_2", "item_3"], ["item_1", "item_2"]]
-    :param max_length: 4
-    :param pad_item: pad_item
-    :return: [["item_1", "item_2", "item_3", pad_item],
-                    ["item_1", "item_2", pad_item, pad_item]]
-    """
-    for idx, text in enumerate(texts):
-        text_length = len(text)
-        texts[idx].extend([[pad_item] * 300] * (max_length - text_length))
-    return texts
-
-
 def truncate_sequence(texts: List[list], max_length: int) -> list:
     """
     truncate_sequence function is written for truncate list of samples
@@ -139,18 +120,6 @@ def truncate_sequence(texts: List[list], max_length: int) -> list:
             texts[idx] = text[: max_length - 1]
             texts[idx].append("[SEP]")
     return texts
-
-
-def create_attention_masks(data: List[list], pad_item: str = "[PAD]") -> List[list]:
-    """
-    create_attention_masks function is written for creating attention masks
-    :param data: [["item_1", "item_2", "item_3", "pad_item"],
-                ["item_1", "pad_item", "pad_item", "pad_item"]]
-    :param pad_item: pad_item
-    :return: [[1, 1, 1, 0], [1, 0, 0, 0]]
-    """
-
-    return [[1 if item != pad_item else 0 for item in sample] for sample in data]
 
 
 def create_test_samples(data: List[list], tokenizer) -> [List[list], List[list], List[list]]:
