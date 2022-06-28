@@ -1,9 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+    Complex NER Project:
+        Make the importing much shorter
+"""
+# ============================ Third Party libs ============================
 import torch
 import pytorch_lightning as pl
 from typing import List
 from torch.utils.data import Dataset, DataLoader
-from data_preparation import create_attention_masks, pad_sequence, truncate_sequence, pad_sequence_2
-from utils import find_max_length_in_list
 
 
 class CustomDataset(Dataset):
@@ -42,28 +46,38 @@ class CustomDataset(Dataset):
                 "subtoken_check": subtoken_check.flatten()}
 
 
-class LstmDataset(Dataset):
-    def __init__(self, texts: List[list], targets: List[list], max_length: int,
-                 tokenizer, target_indexer):
+class InferenceDataset(Dataset):
+    def __init__(self, texts: List[list], subtoken_checks: List[list], tokenizer, max_length: int):
         self.texts = texts
-        self.targets = targets
+        self.subtoken_checks = subtoken_checks
+        self.tokenizer = tokenizer
         self.max_length = max_length
-        self.token_indexer = tokenizer
-        self.target_indexer = target_indexer
 
     def __len__(self):
-        return len(self.targets)
+        return len(self.texts)
 
     def __getitem__(self, item_index):
-        attention_masks = create_attention_masks(data=[self.texts[item_index]],
-                                                 pad_item="[PAD]")[0]
+        inputs = self.tokenizer.encode_plus(
+            text=self.texts[item_index],
+            max_length=self.max_length,
+            padding="max_length",
+            return_tensors="pt",
+            add_special_tokens=True,
+            truncation=True
+        )
 
-        text = self.token_indexer.convert_samples_to_indexes([self.texts[item_index]])[0]
+        subtoken_check = self.tokenizer.encode_plus(
+            text=self.subtoken_checks[item_index],
+            max_length=self.max_length,
+            padding="max_length",
+            return_tensors="pt",
+            add_special_tokens=True,
+            truncation=True
+        ).input_ids
 
-        target = self.target_indexer.convert_samples_to_indexes([self.targets[item_index]])[0]
-
-        return {"input_ids": torch.LongTensor(text), "target": torch.LongTensor(target),
-                "attention_mask": torch.LongTensor(attention_masks)}
+        return {"input_ids": inputs["input_ids"].flatten(),
+                "attention_mask": inputs["attention_mask"].flatten(),
+                "subtoken_check": subtoken_check.flatten()}
 
 
 class DataModule(pl.LightningDataModule):
