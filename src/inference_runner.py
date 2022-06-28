@@ -8,11 +8,11 @@ import logging
 from configuration import BaseConfig
 from data_loader import read_text
 from models.mt5_transformer import Classifier
-
+from dataset import InferenceDataset
 from data_preparation import prepare_conll_data, create_test_samples
 from utils import find_max_length_in_list, handle_subtoken_labels, convert_x_label_to_true_label, \
     progress_bar
-from inference import Inference, InferenceDataset
+from inference import Inference
 
 logging.basicConfig(level=logging.DEBUG)
 
