@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-# ========================================================
-
 """
-    Complex NER Project:
-        configuration:
-                Get data and parameter from the user
+In this module we have add arguments and their default values in it.
 """
 
 # ============================ Third Party libs ============================
@@ -17,7 +13,7 @@ from pathlib import Path
 
 class BaseConfig:
     """
-    BaseConfig class is written to write configs in it
+    BaseConfig class is written to write arguments and their default values in it.
     """
 
     def __init__(self):
@@ -32,7 +28,8 @@ class BaseConfig:
                                  default=Path(__file__).parents[2].__str__() + "/assets/")
 
         self.parser.add_argument("--saved_model_path", type=str,
-                                 default=Path(__file__).parents[2].__str__() + "/assets/saved_models/")
+                                 default=Path(__file__).parents[
+                                             2].__str__() + "/assets/saved_models/")
 
         self.parser.add_argument("--language_model_path", type=str,
                                  default=Path(__file__).parents[3].__str__()
