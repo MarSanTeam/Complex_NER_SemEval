@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    Complex NER Project:
+This module create to write Inference class. With Inference class we
+can inference with proposed complex ner model
 """
 
 # ============================ Third Party libs ============================
@@ -15,11 +16,36 @@ CONFIG = CONFIG_CLASS.get_config()
 
 
 class Inference:
+    """
+    class to make inference for complex ner model
+
+    Arguments:
+        model: instance of model class
+        tokenizer: tokenizer object
+    """
+
     def __init__(self, model, tokenizer):
+        """
+
+        Args:
+            model: instance of model class
+            tokenizer: tokenizer object
+        """
+
         self.model = model
         self.tokenizer = tokenizer
 
     def tokenizing_sentences(self, sentence: str, max_length: int):
+        """
+        method to tokenize input sentence
+        Args:
+            sentence: input sentence
+            max_length: maximum length for sentence
+
+        Returns:
+            output of tokenizer (batch with size 1)
+
+        """
         inputs = self.tokenizer.encode_plus(
             text=sentence,
             add_special_tokens=True,
@@ -33,11 +59,27 @@ class Inference:
         return inputs
 
     def predict(self, inputs):
+        """
+        method to make prediction with input batch
+        Args:
+            inputs: input batch
+
+        Returns:
+
+        """
         outputs = self.model(inputs)
         outputs = numpy.argmax(outputs.cpu().detach().numpy(), axis=2)
         return list(outputs)
 
     def convert_ids_to_entities(self, predicted_tags: List[list]) -> List[list]:
+        """
+        method to convert each output id to ner tag
+        Args:
+            predicted_tags: predicted tag for list of samples
+
+        Returns:
+
+        """
         """
 
         :param predicted_tags: [[ t1, t2, ..., tn][t1, t2, ..., tn]]
@@ -50,9 +92,15 @@ class Inference:
 
     def convert_token_id_to_token(self, batched_sample: dict) -> List[list]:
         """
+        function to convert id to tokens
+        Args:
+            batched_sample: bacth of samples
 
-        :param batched_sample:
-        :return:
+        Returns:
+            list of sentence
+
         """
-        sentence = [self.tokenizer.convert_ids_to_tokens(idx) for idx in batched_sample["input_ids"]]
+
+        sentence = [self.tokenizer.convert_ids_to_tokens(idx) for idx in
+                    batched_sample["input_ids"]]
         return sentence
