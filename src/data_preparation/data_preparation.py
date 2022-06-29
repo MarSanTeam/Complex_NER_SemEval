@@ -135,11 +135,16 @@ def pad_sequence(texts: List[list], max_length: int, pad_item: str = "[PAD]") ->
 
 def truncate_sequence(texts: List[list], max_length: int) -> list:
     """
-    truncate_sequence function is written for truncate list of samples
-    :param texts: [["item_1", "item_2", "item_3"], ["item_1", "item_2"]]
-    :param max_length: 2
-    :return: [["item_1", "item_2"], ["item_1", "item_2"]]
+    function to truncate input sentences
+    Args:
+        texts: list of input tokenized sentences
+        max_length: maximum length of sentence
+
+    Returns:
+        list of truncated sentences
+
     """
+
     for idx, text in enumerate(texts):
         if len(text) > max_length:
             texts[idx] = text[: max_length - 1]
@@ -147,7 +152,18 @@ def truncate_sequence(texts: List[list], max_length: int) -> list:
     return texts
 
 
-def create_test_samples(data: List[list], tokenizer) -> [List[list], List[list], List[list]]:
+def create_test_samples(data: List[list], tokenizer) -> [List[list], List[list]]:
+    """
+    function to make test sample to inference
+    Args:
+        data: list of input sentence
+        tokenizer: tokenizer object
+
+    Returns:
+        list of tokenized sentences
+        list of subtoken check for each sentence
+
+    """
     """
 
     :param data:
