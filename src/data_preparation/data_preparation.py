@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Complex NER Project:
-        data preparation:
-            data_prepration.py
-
+This module is written to write data preparation function
 """
 
 # ============================ Third Party libs ============================
@@ -13,9 +10,15 @@ from typing import List
 def prepare_conll_data(data: list) -> [List[list], List[list]]:
     """
     prepare_conll_data function is written for loading data in conll format
-    :param data:
-    :return:
+
+    Args:
+        data: named entity recognition data format
+
+    Returns:
+        list of tokenized sentences, list of tokens tags for eact sentence
+
     """
+
     sentences, labels, tokens, tags = [], [], [], []
     for line in data:
         if not line.startswith("# id"):
@@ -34,19 +37,29 @@ def prepare_conll_data(data: list) -> [List[list], List[list]]:
 def tokenize_and_keep_labels(sentences: List[list], labels: List[list], tokenizer,
                              mode: str = "same") -> [List[list], List[list], List[list]]:
     """
-    Function to tokenize and preserve labels
-    :param sentences: [['تغییرات', 'قیمت', 'رمز', 'ارز',
-                            'اتریوم', 'در', 'یک', 'هفته', 'قبل'], ... ]
-    :param labels: [['O', 'O', 'B-ENT', 'I-ENT',
-                        'I-ENT', 'O','B-TIM', 'I-TIM', 'I-TIM'], ...]
-    :param indexed_sentences:
-    :param tokenizer:
-    :param mode: ["same", "x_mode"]
-    :return: [['تغییر', '##ات', 'قیمت', 'رمز', 'ا', '##رز', 'ا', '##تری', '##وم'
+    function to handle subtoken labels and add subtoken check feature
+    Args:
+        sentences: list of input tokenized sentence
+        labels: list of ner tag for each input tokenized sentence
+        tokenizer: tokenizer objective
+        mode: if same, ner tag for all subtoken are equal.
+              if x_mode, ner tag for all subtoken except first one is X
+
+    Returns:sentences, labels, subtoken_checks
+        list of tokenized sentences
+        list of ner tag for each token in sentence
+        list of subtoken check tag for each token in sentence
+
+    Examples:
+        sentences = [["تغییرات", "قیمت", "رمز", "ارز", "اتریوم", "در", "یک", "هفته", "قبل"]]
+        labels = [["O", "O", "B-ENT", "I-ENT", "I-ENT", "O","B-TIM", "I-TIM", "I-TIM"]]
+        [['تغییر', '##ات', 'قیمت', 'رمز', 'ا', '##رز', 'ا', '##تری', '##وم'
                 , 'در', 'یک', 'هفت', '##ه', 'قبل'], ... ]
             [['O', 'O', 'O', 'B-ENT', 'I-ENT', 'I-ENT', 'I-ENT',
             'I-ENT', 'I-ENT', 'O', 'B-TIM', 'I-TIM', 'I-TIM', 'I-TIM'], ... ]
+
     """
+
     assert len(sentences) == len(labels), "Sentences and labels should have " \
                                           "the same number of samples"
     subtoken_checks = []
@@ -75,13 +88,20 @@ def tokenize_and_keep_labels(sentences: List[list], labels: List[list], tokenize
 def add_special_tokens(sentences: List[list], labels: List[list], cls_token: str,
                        sep_token: str) -> [List[list], List[list]]:
     """
-    add_special_tokens function is written for add special tokens for samples
-    :param sentences:
-    :param labels:
-    :param cls_token:
-    :param sep_token:
-    :return:
+    function to add special tokens for samples
+
+    Args:
+        sentences: list of input tokenized sentences
+        labels: list of ner tag for each input tokenized sentences
+        cls_token: cls token
+        sep_token: sep token
+
+    Returns:
+        list of tokenized sentences with special tokens
+        list of ner tag for each tokenized sentences with special tokens
+
     """
+
     for idx, (sentence, label) in enumerate(zip(sentences, labels)):
         sentence.insert(0, cls_token)
         label.insert(0, cls_token)
@@ -95,13 +115,18 @@ def add_special_tokens(sentences: List[list], labels: List[list], cls_token: str
 
 def pad_sequence(texts: List[list], max_length: int, pad_item: str = "[PAD]") -> List[list]:
     """
-    pad_sequence function is written for pad list of samples
-    :param texts: [["item_1", "item_2", "item_3"], ["item_1", "item_2"]]
-    :param max_length: 4
-    :param pad_item: pad_item
-    :return: [["item_1", "item_2", "item_3", pad_item],
-                    ["item_1", "item_2", pad_item, pad_item]]
+    function to padded input list to maximum length
+
+    Args:
+        texts: list of tokenized sentences
+        max_length: maximum length for each sentence
+        pad_item: pad item
+
+    Returns:
+        list of padded sentences
+
     """
+
     for idx, text in enumerate(texts):
         text_length = len(text)
         texts[idx].extend([pad_item] * (max_length - text_length))
