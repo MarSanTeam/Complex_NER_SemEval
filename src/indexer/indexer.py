@@ -11,7 +11,7 @@ from typing import List
 from abc import abstractmethod
 
 # =============================== My packages ==============================
-from .helper import save_json, save_text
+from data_loader import write_json, write_text
 
 
 class Indexer:
@@ -162,8 +162,8 @@ class Indexer:
         Returns:
             None
         """
-        save_text(data=self.vocabs, path=os.path.join(path, "vocabs.txt"))
-        save_json(data=self.get_vocab2idx(),
-                  path=os.path.join(path, "vocab2idx.json"))
-        save_json(data=self.get_idx2vocab(),
-                  path=os.path.join(path, "idx2vocab.json"))
+        write_text(data=self.vocabs, path=os.path.join(path, "vocabs.txt"))
+        write_json(data=self.get_vocab2idx(),
+                   path=os.path.join(path, "vocab2idx.json"))
+        write_json(data=self.get_idx2vocab(),
+                   path=os.path.join(path, "idx2vocab.json"))

@@ -45,3 +45,14 @@ def write_pickle(data: list, path: str) -> None:
 
     with open(path, "wb") as outfile:
         pickle.dump(data, outfile)
+
+
+def write_text(data: list, path: str) -> None:
+    """
+    save_text function is written for write in text files
+    :param data:
+    :param path:
+    :return:
+    """
+    with open(path, "w", encoding="utf-8") as file:
+        file.write("\n".join(data))
