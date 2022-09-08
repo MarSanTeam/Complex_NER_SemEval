@@ -2,7 +2,7 @@
 """
     Complex NER Project:
         data preparation:
-            data_prepration.py
+            data_preparation.py
 
 """
 
@@ -12,9 +12,15 @@ from typing import List
 
 def prepare_conll_data(data: list) -> [List[list], List[list]]:
     """
-    prepare_conll_data function is written for loading data in conll format
-    :param data:
-    :return:
+    function to load data in conll format
+
+    Args:
+        data: NER data from txt file
+
+    Returns:
+        sentences: list of tokenized sentences
+        labels: list of labels for each sentence
+
     """
     sentences, labels, tokens, tags = [], [], [], []
     for line in data:
@@ -34,31 +40,34 @@ def prepare_conll_data(data: list) -> [List[list], List[list]]:
 def tokenize_and_keep_labels(sentences: List[list], labels: List[list], tokenizer,
                              mode: str = "same") -> [List[list], List[list], List[list]]:
     """
-    Function to tokenize and preserve labels
-    :param sentences: [['تغییرات', 'قیمت', 'رمز', 'ارز',
-                            'اتریوم', 'در', 'یک', 'هفته', 'قبل'], ... ]
-    :param labels: [['O', 'O', 'B-ENT', 'I-ENT',
-                        'I-ENT', 'O','B-TIM', 'I-TIM', 'I-TIM'], ...]
-    :param indexed_sentences:
-    :param tokenizer:
-    :param mode: ["same", "x_mode"]
-    :return: [['تغییر', '##ات', 'قیمت', 'رمز', 'ا', '##رز', 'ا', '##تری', '##وم'
-                , 'در', 'یک', 'هفت', '##ه', 'قبل'], ... ]
-            [['O', 'O', 'O', 'B-ENT', 'I-ENT', 'I-ENT', 'I-ENT',
-            'I-ENT', 'I-ENT', 'O', 'B-TIM', 'I-TIM', 'I-TIM', 'I-TIM'], ... ]
+    function to tokenize and preserve labels
+
+    Args:
+        sentences: list of tokenized sentences
+        labels: list of labels for each sentence
+        tokenizer: tokenizer object (ex: bert tokenizer)
+        mode: use "same" or "x_mode". When using same, the same label is considered for all
+        sub_tokens. And when x_mode is used, the first subtoken will be labeled ner tag and other
+        sub_tokens will be labeled X tag.
+
+    Returns:
+        sentences: list of tokenized sentences
+        labels: list of labels for each sentence
+        subtoken_checks: list of subtoken check for each sentences
+
     """
     assert len(sentences) == len(labels), "Sentences and labels should have " \
                                           "the same number of samples"
     subtoken_checks = []
     for idx, (sentence, label) in enumerate(zip(sentences, labels)):
-        tokenized_sentence, labels_, checks_ = [], [], []
+        sentence_, labels_, checks_ = [], [], []
         for word, tag in zip(sentence, label):
             checks_.append("1")
             # Tokenize each word and count number of its subwords
             tokenized_word = tokenizer.tokenize(str(word))
             n_subwords = len(tokenized_word)
             # The tokenized word is added to the resulting tokenized word list
-            tokenized_sentence.extend(tokenized_word)
+            sentence_.extend(tokenized_word)
             checks_.extend(["0"] * (n_subwords - 1))
 
             # The same label is added to the new list of labels `n_subwords` times
@@ -67,7 +76,7 @@ def tokenize_and_keep_labels(sentences: List[list], labels: List[list], tokenize
             elif mode == "x_mode":
                 labels_.append(tag)
                 labels_.extend(["X"] * (n_subwords - 1))
-        sentences[idx], labels[idx] = tokenized_sentence, labels_
+        sentences[idx], labels[idx] = sentence_, labels_
         subtoken_checks.append(checks_)
     return sentences, labels, subtoken_checks
 
@@ -75,12 +84,18 @@ def tokenize_and_keep_labels(sentences: List[list], labels: List[list], tokenize
 def add_special_tokens(sentences: List[list], labels: List[list], cls_token: str,
                        sep_token: str) -> [List[list], List[list]]:
     """
-    add_special_tokens function is written for add special tokens for samples
-    :param sentences:
-    :param labels:
-    :param cls_token:
-    :param sep_token:
-    :return:
+    function to add special tokens for samples
+
+    Args:
+        sentences: list of tokenized sentences
+        labels: list of labels for each sentence
+        cls_token: cls token
+        sep_token: sep token
+
+    Returns:
+        sentences: list of tokenized sentences which special tokens have been added
+        labels: list of labels for each sentence which special tokens have been added
+
     """
     for idx, (sentence, label) in enumerate(zip(sentences, labels)):
         sentence.insert(0, cls_token)
@@ -95,12 +110,16 @@ def add_special_tokens(sentences: List[list], labels: List[list], cls_token: str
 
 def pad_sequence(texts: List[list], max_length: int, pad_item: str = "[PAD]") -> List[list]:
     """
-    pad_sequence function is written for pad list of samples
-    :param texts: [["item_1", "item_2", "item_3"], ["item_1", "item_2"]]
-    :param max_length: 4
-    :param pad_item: pad_item
-    :return: [["item_1", "item_2", "item_3", pad_item],
-                    ["item_1", "item_2", pad_item, pad_item]]
+    function to pad sentences
+
+    Args:
+        texts: list of tokenized sentences
+        max_length: maximum length for sentences
+        pad_item: pad token
+
+    Returns:
+        texts: padded sentences
+
     """
     for idx, text in enumerate(texts):
         text_length = len(text)
@@ -110,10 +129,15 @@ def pad_sequence(texts: List[list], max_length: int, pad_item: str = "[PAD]") ->
 
 def truncate_sequence(texts: List[list], max_length: int) -> list:
     """
-    truncate_sequence function is written for truncate list of samples
-    :param texts: [["item_1", "item_2", "item_3"], ["item_1", "item_2"]]
-    :param max_length: 2
-    :return: [["item_1", "item_2"], ["item_1", "item_2"]]
+    function to truncate sentences
+
+    Args:
+        texts: list of tokenized sentences
+        max_length: maximum length for sentences
+
+    Returns:
+        truncated sentences
+
     """
     for idx, text in enumerate(texts):
         if len(text) > max_length:
@@ -124,10 +148,15 @@ def truncate_sequence(texts: List[list], max_length: int) -> list:
 
 def create_test_samples(data: List[list], tokenizer) -> [List[list], List[list], List[list]]:
     """
+    function to prepare suitable examples for inference
+    Args:
+        data: list of sentences
+        tokenizer: tokenizer object
 
-    :param data:
-    :param tokenizer:
-    :return:
+    Returns:
+        data: list of tokenized sentences
+        subtoken_checks: list of subtoken check for each sentence
+
     """
     subtoken_checks = []
     for idx, item in enumerate(data):
