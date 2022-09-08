@@ -11,13 +11,13 @@ import logging
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import CSVLogger
 from pytorch_lightning.callbacks import EarlyStopping
-from transformers import T5Tokenizer, MT5Tokenizer
+from transformers import T5Tokenizer
 import itertools
 
 # ============================ My packages ============================
 from configuration import BaseConfig
 from data_loader import read_text, write_json
-from data_preparation import prepare_conll_data, tokenize_and_keep_labels,\
+from data_preparation import prepare_conll_data, tokenize_and_keep_labels, \
     pad_sequence, truncate_sequence
 from indexer import Indexer
 from utils import find_max_length_in_list
@@ -43,18 +43,14 @@ if __name__ == "__main__":
     RAW_VAL_DATA = read_text(path=os.path.join(CONFIG.processed_data_dir, CONFIG.dev_data))
 
     TRAIN_SENTENCES, TRAIN_LABELS = prepare_conll_data(RAW_TRAIN_DATA)
-    TRAIN_SENTENCES = TRAIN_SENTENCES[:100]
-    TRAIN_LABELS = TRAIN_LABELS[:100]
-    print(TRAIN_SENTENCES)
-    print(TRAIN_LABELS)
+    TRAIN_SENTENCES = TRAIN_SENTENCES
+    TRAIN_LABELS = TRAIN_LABELS
     logging.debug("We have {} train samples.".format(len(TRAIN_LABELS)))
 
     VAL_SENTENCES, VAL_LABELS = prepare_conll_data(RAW_VAL_DATA)
     logging.debug("We have {} val samples.".format(len(VAL_LABELS)))
-    VAL_SENTENCES = VAL_SENTENCES[:100]
-    VAL_LABELS = VAL_LABELS[:100]
-    print(VAL_SENTENCES)
-    print(VAL_LABELS)
+    VAL_SENTENCES = VAL_SENTENCES
+    VAL_LABELS = VAL_LABELS
 
     # Create token indexer
     TOKENS = list(itertools.chain(*TRAIN_SENTENCES))
@@ -82,8 +78,10 @@ if __name__ == "__main__":
     SENTENCE_MAX_LENGTH = find_max_length_in_list(TRAIN_SENTENCES)
     CONFIG.SENTENCE_MAX_LENGTH = SENTENCE_MAX_LENGTH
 
-    TRAIN_LABELS = pad_sequence(TRAIN_LABELS, max_length=SENTENCE_MAX_LENGTH, pad_item=TOKENIZER.pad_token)
-    VAL_LABELS = pad_sequence(VAL_LABELS, max_length=SENTENCE_MAX_LENGTH, pad_item=TOKENIZER.pad_token)
+    TRAIN_LABELS = pad_sequence(TRAIN_LABELS, max_length=SENTENCE_MAX_LENGTH,
+                                pad_item=TOKENIZER.pad_token)
+    VAL_LABELS = pad_sequence(VAL_LABELS, max_length=SENTENCE_MAX_LENGTH,
+                              pad_item=TOKENIZER.pad_token)
 
     # label truncating
     TRAIN_LABELS = truncate_sequence(TRAIN_LABELS, SENTENCE_MAX_LENGTH)
@@ -96,6 +94,7 @@ if __name__ == "__main__":
     TARGET_INDEXER = Indexer(vocabs=TAGS)
     TARGET_INDEXER.build_vocab2idx()
     TARGET_INDEXER.build_idx2vocab()
+    TARGET_INDEXER.save(CONFIG.assets_dir)
 
     NUM_BATCHES = len(TRAIN_SENTENCES) // CONFIG.batch_size
     TOTAL_STEPS = 50 * NUM_BATCHES
@@ -125,7 +124,8 @@ if __name__ == "__main__":
 
     # Instantiate the Model Trainer
     TRAINER = pl.Trainer(max_epochs=CONFIG.n_epochs, gpus=[1],  # CONFIG.num_of_gpu,
-                         callbacks=[CHECKPOINT_CALLBACK, CHECKPOINT_CALLBACK_F1, EARLY_STOPPING_CALLBACK],
+                         callbacks=[CHECKPOINT_CALLBACK, CHECKPOINT_CALLBACK_F1,
+                                    EARLY_STOPPING_CALLBACK],
                          progress_bar_refresh_rate=60, logger=LOGGER, auto_scale_batch_size=True)
 
     # Train the Classifier Model
