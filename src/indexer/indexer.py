@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     Complex NER Project:
-        data preparation:
+        indexer:
             indexer
 """
 
