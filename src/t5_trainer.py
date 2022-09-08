@@ -23,7 +23,7 @@ from indexer import Indexer
 from utils import find_max_length_in_list
 from models import build_checkpoint_callback
 from dataset import DataModule
-from models.mt5_transformer import Classifier
+from models.complex_ner_model import Classifier
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -43,8 +43,8 @@ if __name__ == "__main__":
     RAW_VAL_DATA = read_text(path=os.path.join(CONFIG.processed_data_dir, CONFIG.dev_data))
 
     TRAIN_SENTENCES, TRAIN_LABELS = prepare_conll_data(RAW_TRAIN_DATA)
-    TRAIN_SENTENCES = TRAIN_SENTENCES
-    TRAIN_LABELS = TRAIN_LABELS
+    TRAIN_SENTENCES = TRAIN_SENTENCES[:100]
+    TRAIN_LABELS = TRAIN_LABELS[:100]
     logging.debug("We have {} train samples.".format(len(TRAIN_LABELS)))
 
     VAL_SENTENCES, VAL_LABELS = prepare_conll_data(RAW_VAL_DATA)

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
     Complex NER Project:
+        models:
+            transformer.py
 """
 
 # ============================ Third Party libs ============================
@@ -94,8 +96,8 @@ class MultiHeadAttentionLayer(torch.nn.Module):
 
         # energy = [batch_size, n_heads, query_len, key_len]
 
-        # if mask is not None:
-        #     energy = energy.masked_fill(mask == 0, -1e10)
+        if mask is not None:
+            energy = energy.masked_fill(mask == 0, -1e10)
 
         attention = torch.softmax(energy, dim=-1)
 

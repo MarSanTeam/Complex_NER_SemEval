@@ -32,10 +32,10 @@ class BaseConfig:
                                              2].__str__() + "/assets/saved_models/")
 
         self.parser.add_argument("--language_model_path", type=str,
-                                 default=Path(__file__).parents[3].__str__()
+                                 default=Path(__file__).parents[4].__str__()
                                          + "/LanguageModels/t5_en_large")
         self.parser.add_argument("--language_model_tokenizer_path", type=str,
-                                 default=Path(__file__).parents[3].__str__()
+                                 default=Path(__file__).parents[4].__str__()
                                          + "/LanguageModels/t5_en_large")
 
         self.parser.add_argument("--csv_logger_path", type=str,

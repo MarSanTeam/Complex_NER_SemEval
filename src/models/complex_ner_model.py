@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
     Complex NER Project:
+        models:
+            complex_ner_model.py
 """
 
 # ============================ Third Party libs ============================
@@ -15,7 +17,7 @@ from seqeval.metrics import f1_score, accuracy_score, classification_report
 from utils import ignore_pad_index, convert_index_to_tag
 from evaluation import Evaluator
 from .helper import add_metric_to_log_dic
-from models.transformers import EncoderLayer
+from models.transformer import EncoderLayer
 
 
 class Classifier(pl.LightningModule):
@@ -28,10 +30,10 @@ class Classifier(pl.LightningModule):
 
         self.tags = self.extract_tags()
 
-        self.mt5_model = transformers.T5EncoderModel.from_pretrained(
+        self.t5_model = transformers.T5EncoderModel.from_pretrained(
             config.language_model_path)
 
-        transformer_input_dim = self.mt5_model.config.hidden_size
+        transformer_input_dim = self.t5_model.config.hidden_size
         self.enc_layer = EncoderLayer(hid_dim=transformer_input_dim,
                                       n_heads=8, pf_dim=transformer_input_dim * 2,
                                       dropout=config.dropout)
@@ -52,7 +54,7 @@ class Classifier(pl.LightningModule):
         :return:
         """
         attn_masks = batch["attention_mask"].type(torch.uint8)
-        mt5_tokens = self.mt5_model(input_ids=batch["input_ids"]).last_hidden_state
+        mt5_tokens = self.t5_model(input_ids=batch["input_ids"]).last_hidden_state
         enc_out = self.enc_layer(mt5_tokens, src_mask=attn_masks)
         return self.output_layer(enc_out)
 
